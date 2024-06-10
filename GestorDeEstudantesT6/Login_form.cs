@@ -11,27 +11,11 @@ using MySql.Data.MySqlClient;
 
 namespace GestorDeEstudantesT6
 {
-    internal class MeuBanciDeDados
+    public partial class Login_Form : Form
     {
-      private readonly MySqlConnection _connection = new MySqlConnection("datasource=localhost;port=3306;"+"username=root;password=;database=sga_estudantes_bd_t6")
-    }
-}
-
-    public partial class Login_form : Form
-    {
-        public Login_form()
+        public Login_Form()
         {
             InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void label3_Click(object sender, EventArgs e)
@@ -39,9 +23,45 @@ namespace GestorDeEstudantesT6
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Login_Form_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void buttonCancelar_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void buttonLogin_Click(object sender, EventArgs e)
+        {
+            MeuBancoDeDados meuBancoDeDados = new MeuBancoDeDados();
+
+            MySqlDataAdapter meuAdaptadorSql = new MySqlDataAdapter();
+            DataTable minhaTabela = new DataTable();
+            MySqlCommand meuComandoSql = 
+                new MySqlCommand("SELECT * FROM `usuarios` WHERE `nome_de_usuario` = @usuario AND `senha` = @senha", 
+                meuBancoDeDados.getConexao);
+
+            meuComandoSql.Parameters.Add("@usuario", MySqlDbType.VarChar).Value = 
+                textBoxUsuario.Text;
+            meuComandoSql.Parameters.Add("@senha", MySqlDbType.VarChar).Value = 
+                textBoxSenha.Text;
+
+            meuAdaptadorSql.SelectCommand = meuComandoSql;
+
+            meuAdaptadorSql.Fill(minhaTabela);
+
+            if (minhaTabela.Rows.Count > 0)
+            {
+                //MessageBox.Show("Existem dados!");
+                this.DialogResult = DialogResult.OK;
+            }
+            else
+            {
+                MessageBox.Show("Usuário ou senha inválidos.", 
+                    "Erro de login", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
